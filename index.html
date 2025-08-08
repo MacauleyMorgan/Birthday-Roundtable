@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bingo Caller (1-75)</title>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/style.css">
+</head>
+<body class="blue lighten-4">
+  <div class="card container">
+    <h1 class="title">Amazon Bingo</h1>
+
+    <div class="controls">
+      <button class="waves-effect waves-light btn-large" id="startBtn">Start</button>
+      <button class="waves-effect waves-light btn-large" id="pauseBtn">Pause</button>
+      <button class="waves-effect waves-light btn-large" id="nextBtn">Draw Next</button>
+      <button class="waves-effect waves-light btn-large" id="resetBtn">Reset</button>
+      <div class="speed">
+        <label for="speed">Interval (ms)</label>
+        </br>
+        <input id="speed" type="number" value="3000" min="200" step="100" placeholder="3000"/>
+      </div>
+    </div>
+
+    <div class="big" id="current">—</div>
+
+    <div>
+      <strong class="drawn-numbers">Drawn numbers:</strong>
+      <div id="drawn" class="list drawn-numbers-list" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    class Bingo {
+      constructor(maxNumber = 75) {
+        this.maxNumber = maxNumber;
+        this.reset();
+      }
+
+      reset() {
+        this.numbers = Array.from({ length: this.maxNumber }, (_, i) => i + 1);
+        this._shuffle();
+        this.currentIndex = 0;
+      }
+
+      _shuffle() {
+        for (let i = this.numbers.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [this.numbers[i], this.numbers[j]] = [this.numbers[j], this.numbers[i]];
+        }
+      }
+
+      drawNumber() {
+        if (this.currentIndex >= this.numbers.length) return null;
+        const num = this.numbers[this.currentIndex++];
+        console.log(`Drawn number: ${num}`); // console.log as you requested
+        return num;
+      }
+
+      numbersLeft() {
+        return this.maxNumber - this.currentIndex;
+      }
+    }
+
+    // UI wiring
+    const bingo = new Bingo(75);
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const speedInput = document.getElementById('speed');
+    const currentEl = document.getElementById('current');
+    const drawnEl = document.getElementById('drawn');
+
+    let timer = null;
+
+    function renderNumber(num) {
+      if (num === null) {
+        currentEl.textContent = 'All drawn';
+        return;
+      }
+      currentEl.textContent = num;
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = num;
+      drawnEl.appendChild(chip);
+    }
+
+    function drawNext() {
+      const n = bingo.drawNumber();
+      if (n === null) {
+        stopAuto();
+        renderNumber(null);
+        return;
+      }
+      renderNumber(n);
+    }
+
+    function startAuto() {
+      if (timer) return;
+      const ms = Math.max(100, parseInt(speedInput.value, 10) || 3000);
+      timer = setInterval(() => {
+        drawNext();
+      }, ms);
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+    }
+
+    function stopAuto() {
+      if (!timer) return;
+      clearInterval(timer);
+      timer = null;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+    }
+
+    startBtn.addEventListener('click', startAuto);
+    pauseBtn.addEventListener('click', stopAuto);
+    nextBtn.addEventListener('click', drawNext);
+
+    resetBtn.addEventListener('click', () => {
+      stopAuto();
+      bingo.reset();
+      currentEl.textContent = '—';
+      drawnEl.innerHTML = '';
+      console.log('Bingo reset.');
+    });
+
+    // initial state
+    pauseBtn.disabled = true;
+
+    // auto-start optional: uncomment the next two lines if you want the caller to start immediately
+    // startAuto();
+
+  </script>
+      <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
+</body>
+</html>

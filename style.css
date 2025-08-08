@@ -1,0 +1,30 @@
+html{
+    text-align: center;
+    height:100%;
+}
+
+body{
+    height: 100%;
+    background-image: url("https://cdn.amazonfctours.com/dims4/default/e7662d4/2147483647/strip/true/crop/667x667+167+0/resize/1000x1000!/format/webp/quality/90/?url=https%3A%2F%2Famazon-k1-prod-tours.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fba%2Ff2%2Faa11d51d471380e5ea21e79c3f02%2Frobotics-in-person.jpg");
+}
+
+.container{
+    margin-left:10%;
+    min-width: 80%;
+    min-height: 90%;
+    border-radius: 10px;
+}
+
+#speed{
+    text-align: center;
+    width:30%;
+}
+
+.title{
+    padding: 5%;
+
+}
+
+#current{
+    font-size: 5rem;
+}
